@@ -2,315 +2,865 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>尺寸轉換與標籤批次產生器</title>
+
     <style id="dynamic-page-size">
-        @page { size: 62mm 23mm; margin: 0; }
+        @page {
+            size: 62mm 23mm;
+            margin: 0;
+        }
     </style>
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
-        
-        .card { background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); width: 100%; max-width: 500px; margin-bottom: 30px; }
-        .title { text-align: center; font-size: 1.5rem; color: #333; margin-bottom: 24px; font-weight: 600; }
-        
-        /* 尺寸輸入區樣式 */
-        .input-group { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 24px; }
-        .input-field { flex: 1; display: flex; flex-direction: column; align-items: center; }
-        .input-field label { font-size: 0.9rem; color: #666; margin-bottom: 6px; }
-        .input-field input { width: 100%; padding: 10px; font-size: 1.1rem; text-align: center; border: 2px solid #e0e0e0; border-radius: 8px; outline: none; transition: border-color 0.2s; }
-        .input-field input::-webkit-outer-spin-button, .input-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .input-field input[type=number] { -moz-appearance: textfield; }
-        .input-field input:focus { border-color: #007aff; }
-        .multiply-symbol { font-size: 1.2rem; color: #888; margin-top: 20px; }
-        .unit-tag { font-size: 1rem; font-weight: bold; color: #555; margin-top: 20px; }
-        
-        /* 轉換結果區樣式 */
-        .result-group { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
-        .result-row { display: flex; align-items: center; gap: 12px; }
-        .result-label { width: 50px; font-size: 1rem; color: #444; font-weight: 500; }
-        .result-input { flex: 1; padding: 10px; font-size: 1rem; border: 1px solid #ddd; background-color: #f8f9fa; border-radius: 8px; outline: none; }
-        .btn-copy { padding: 10px 16px; font-size: 0.9rem; color: #fff; background-color: #007aff; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; }
-        .btn-copy:hover { background-color: #0056b3; }
 
-        /* 標籤預覽區樣式 */
-        .label-preview-container { display: flex; flex-direction: column; align-items: center; gap: 15px; padding-top: 20px; border-top: 1px dashed #ccc; }
-        .preview-title { font-size: 1rem; color: #666; font-weight: bold; }
-        
-        #print-area { 
-            display: inline-block; 
-            background: white; 
-            box-sizing: border-box; 
-            padding: 0; 
-            width: 62mm; 
-            height: 23mm; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        
-        .label-grid { 
-            display: grid; 
-            grid-template-columns: 15% 85%; 
-            grid-template-rows: 1fr 1fr 1fr; 
-            width: 100%; 
-            height: 100%; 
-            box-sizing: border-box; 
-            border-top: 1px solid #000; 
-            border-left: 1px solid #000; 
-        }
-        
-        .grid-cell { 
-            border-right: 1px solid #000; 
-            border-bottom: 1px solid #000; 
-            position: relative; 
-            box-sizing: border-box; 
-        }
-        
-        .col-left { grid-row: span 3; }
-        
-        .auto-fit-left, .auto-fit-right { 
-            position: absolute; 
-            top: 0; left: 0; right: 0; bottom: 0; 
-            outline: none; 
-            overflow: hidden; 
-            white-space: nowrap; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
-        
-        .auto-fit-left { 
-            writing-mode: vertical-lr; 
-            text-orientation: upright; 
-            letter-spacing: 1px; 
-            font-weight: bold; 
-        }
-        
-        .auto-fit-right { padding: 0 4px; }
-        .auto-fit-left:hover, .auto-fit-right:hover { background-color: #f9f9f9; cursor: text; }
 
-        /* 按鈕區 */
-        .btn-action-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-add { flex: 1; padding: 12px; font-size: 1rem; color: #fff; background-color: #ff9500; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
-        .btn-add:hover { background-color: #e08500; }
-        .btn-print { flex: 1; padding: 12px; font-size: 1rem; color: #fff; background-color: #4CAF50; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
-        .btn-print:hover { background-color: #45a049; }
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-        /* 批次清單管理區 */
-        .batch-section { margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee; }
-        .batch-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .batch-title { font-size: 1rem; font-weight: bold; color: #333; }
-        .btn-clear { font-size: 0.85rem; color: #ff3b30; background: none; border: none; cursor: pointer; }
-        
-        .batch-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
-        .batch-item { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; border: 1px solid #e5e5e5; }
-        .batch-item-text { font-family: monospace; color: #333; }
-        .btn-remove { color: #ff3b30; background: none; border: none; cursor: pointer; font-weight: bold; padding: 2px 6px; }
+        .card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
 
-        .btn-batch-print { width: 100%; padding: 14px; font-size: 1.1rem; color: #fff; background-color: #007aff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background-color 0.2s; }
-        .btn-batch-print:hover { background-color: #0056b3; }
+        .title {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
 
-        #batch-print-container { display: none; }
+
+        /* ========================================
+           尺寸輸入區
+           ======================================== */
+
+        .input-group {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .input-field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-field label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .input-field input {
+            width: 100%;
+            min-width: 60px;
+            padding: 10px;
+            font-size: 1.1rem;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field input:focus {
+            border-color: #007aff;
+        }
+
+        /* 關閉 Chrome, Safari, Edge, Opera 等瀏覽器的上下調整按鈕 */
+        .input-field input::-webkit-outer-spin-button,
+        .input-field input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* 關閉 Firefox 的上下調整按鈕 */
+        .input-field input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .multiply-symbol {
+            font-size: 1.2rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .unit-tag {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+
+        /* ========================================
+           計算結果
+           ======================================== */
+
+        .result-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-label {
+            width: 50px;
+            font-size: 1rem;
+            color: #444;
+            font-weight: 500;
+        }
+
+        .result-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .btn-copy {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            color: #fff;
+            background-color: #007aff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-copy:hover {
+            background-color: #0056b3;
+        }
+
+
+        /* ========================================
+           標籤預覽
+           ======================================== */
+
+        .label-preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+            overflow-x: auto;
+        }
+
+        .preview-title {
+            font-size: 1rem;
+            color: #666;
+            font-weight: bold;
+        }
+
+        #print-area {
+            display: inline-block;
+            background: white;
+            box-sizing: border-box;
+
+            width: 62mm;
+            height: 23mm;
+
+            padding: 3mm;
+
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .label-grid {
+            display: grid;
+
+            grid-template-columns: 15% 85%;
+            grid-template-rows: 1fr 1fr 1fr;
+
+            width: 100%;
+            height: 100%;
+
+            box-sizing: border-box;
+
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+        }
+
+        .grid-cell {
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .col-left {
+            grid-row: span 3;
+        }
+
+        .auto-fit-left,
+        .auto-fit-right {
+            position: absolute;
+
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            outline: none;
+
+            overflow: hidden;
+            white-space: nowrap;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auto-fit-left {
+            writing-mode: vertical-lr;
+            text-orientation: upright;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .auto-fit-right {
+            padding: 0 4px;
+        }
+
+        .auto-fit-left:hover,
+        .auto-fit-right:hover {
+            background-color: #f9f9f9;
+            cursor: text;
+        }
+
+
+        /* ========================================
+           按鈕區
+           ======================================== */
+
+        .btn-action-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-add {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #ff9500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .btn-add:hover {
+            background-color: #e08500;
+        }
+
+        .btn-print {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        .btn-print:hover {
+            background-color: #45a049;
+        }
+
+
+        /* ========================================
+           批次清單
+           ======================================== */
+
+        .batch-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .batch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .batch-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn-clear {
+            font-size: 0.85rem;
+            color: #ff3b30;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .batch-list {
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .batch-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            background: #f8f9fa;
+
+            padding: 8px 12px;
+
+            border-radius: 6px;
+
+            font-size: 0.9rem;
+
+            border: 1px solid #e5e5e5;
+
+            gap: 10px;
+        }
+
+        .batch-item-text {
+            font-family: monospace;
+            color: #333;
+
+            flex: 1;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .btn-remove {
+            color: #ff3b30;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 2px 6px;
+            flex-shrink: 0;
+        }
+
+        .btn-batch-print {
+            width: 100%;
+            padding: 14px;
+
+            font-size: 1.1rem;
+
+            color: #fff;
+            background-color: #007aff;
+
+            border: none;
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+            transition: background-color 0.2s;
+        }
+
+        .btn-batch-print:hover {
+            background-color: #0056b3;
+        }
+
+
+        /*
+         * 實際列印容器
+         */
+        #batch-print-container {
+            display: none;
+        }
+
+
+        /* ========================================
+           RWD
+           ======================================== */
+
+        @media (max-width: 480px) {
+
+            .card {
+                padding: 20px 15px;
+            }
+
+            .btn-action-group {
+                flex-direction: column;
+            }
+        }
+
+
+        /* ========================================
+           PRINT
+           ======================================== */
 
         @media print {
-            body { background: none !important; margin: 0 !important; padding: 0 !important; }
-            .card { display: none !important; }
-            #batch-print-container { display: block !important; }
-            
-            .print-page {
+
+            .card {
+                display: none !important;
+            }
+
+            html,
+            body {
+
                 width: 62mm !important;
-                height: 23mm !important;
-                page-break-after: always;
-                break-after: page;
+
+                height: auto !important;
+                max-height: none !important;
+
                 margin: 0 !important;
                 padding: 0 !important;
+
+                overflow: visible !important;
+
+                background: white !important;
+            }
+
+
+            #batch-print-container {
+
+                display: block !important;
+
+                width: 62mm !important;
+
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+
+            .print-page {
+
+                width: 62mm !important;
+                height: 23mm !important;
+                max-height: 23mm !important;
+
+                margin: 0 !important;
+
+                padding: 3mm !important;
+
+                box-sizing: border-box;
+
+                overflow: hidden !important;
+
+                page-break-after: always;
+                break-after: page;
+            }
+
+
+            .print-page:last-child {
+
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
+
+
+            .label-grid {
+
+                width: 100% !important;
+                height: 100% !important;
+                max-height: 100% !important;
+
                 box-sizing: border-box;
             }
         }
+
     </style>
 </head>
+
+
 <body>
 
-<div class="card">
-    <div class="title">尺寸轉換與標籤產生器</div>
 
-    <div class="input-group">
-        <div class="input-field">
-            <label for="height">高</label>
-            <input type="number" id="height" placeholder="0" onclick="this.select()">
-        </div>
-        <span class="multiply-symbol">×</span>
-        <div class="input-field">
-            <label for="width">寬</label>
-            <input type="number" id="width" placeholder="0" onclick="this.select()">
-        </div>
-        <span class="unit-tag">CM</span>
+<div class="card">
+
+    <div class="title">
+        尺寸轉換與標籤產生器
     </div>
 
+
+    <div class="input-group">
+
+        <div class="input-field">
+            <label for="height">高</label>
+            <input type="number" id="height" placeholder="0" step="any" onclick="this.select()">
+        </div>
+
+        <span class="multiply-symbol">×</span>
+
+        <div class="input-field">
+            <label for="width">寬</label>
+            <input type="number" id="width" placeholder="0" step="any" onclick="this.select()">
+        </div>
+
+        <span class="unit-tag">CM</span>
+
+    </div>
+
+
     <div class="result-group">
+
         <div class="result-row">
             <span class="result-label">台尺</span>
             <input type="text" id="resultTai" class="result-input" readonly>
             <button class="btn-copy" onclick="copyResult('resultTai')">複製</button>
         </div>
+
+
         <div class="result-row">
             <span class="result-label">公分</span>
             <input type="text" id="resultCm" class="result-input" readonly>
             <button class="btn-copy" onclick="copyResult('resultCm')">複製</button>
         </div>
+
     </div>
+
 
     <div class="label-preview-container">
-        <div class="preview-title">標籤即時預覽 (62mm x 23mm)</div>
-        <div id="print-area">
-            <div class="label-grid">
-                <div class="grid-cell col-left">
-                    <div class="auto-fit-left" id="preview-vendor" contenteditable="true" onclick="selectAllText(this)" oninput="autoFitLeft(this)">廠商名稱</div>
-                </div>
-                <div class="grid-cell">
-                    <div class="auto-fit-right" id="label-item-1" contenteditable="true" onclick="selectAllText(this)" oninput="autoFitRight(this)"></div>
-                </div>
-                <div class="grid-cell">
-                    <div class="auto-fit-right" id="label-item-2" contenteditable="true" onclick="selectAllText(this)" oninput="autoFitRight(this)"></div>
-                </div>
-                <div class="grid-cell">
-                    <div class="auto-fit-right" id="label-item-3" contenteditable="true" onclick="selectAllText(this)" oninput="autoFitRight(this)"></div>
-                </div>
-            </div>
+
+        <div class="preview-title">
+            標籤即時預覽 (62mm × 23mm)
         </div>
+
+
+        <div id="print-area">
+
+            <div class="label-grid">
+
+
+                <!-- 左側：廠商名稱 -->
+                <div class="grid-cell col-left">
+
+                    <div
+                        class="auto-fit-left"
+                        id="preview-vendor"
+                        contenteditable="true"
+                        spellcheck="false"
+                        onclick="selectAllText(this)"
+                        oninput="handleManualEdit(this, 'vendor')"
+                    >廠商名稱</div>
+
+                </div>
+
+
+                <!-- 第一列：台尺 + 自訂備註 -->
+                <div class="grid-cell">
+
+                    <div
+                        class="auto-fit-right"
+                        id="label-item-1"
+                        contenteditable="true"
+                        spellcheck="false"
+                        onclick="selectAllText(this)"
+                        oninput="handleManualEdit(this, 'line1')"
+                    ></div>
+
+                </div>
+
+
+                <!-- 第二列：自由輸入 -->
+                <div class="grid-cell">
+
+                    <div
+                        class="auto-fit-right"
+                        id="label-item-2"
+                        contenteditable="true"
+                        spellcheck="false"
+                        onclick="selectAllText(this)"
+                        oninput="handleManualEdit(this, 'line2')"
+                    ></div>
+
+                </div>
+
+
+                <!-- 第三列：公分 + 自訂備註 -->
+                <div class="grid-cell">
+
+                    <div
+                        class="auto-fit-right"
+                        id="label-item-3"
+                        contenteditable="true"
+                        spellcheck="false"
+                        onclick="selectAllText(this)"
+                        oninput="handleManualEdit(this, 'line3')"
+                    ></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
 
     <div class="btn-action-group">
+
         <button class="btn-add" onclick="addToBatch()">加入批次清單</button>
-        <button class="btn-print" onclick="window.print()">列印目前單張</button>
+
+        <button class="btn-print" onclick="printSingle()">列印目前單張</button>
+
     </div>
 
+
     <div class="batch-section">
+
         <div class="batch-header">
             <span class="batch-title" id="batch-count-title">待列印清單 (0 張)</span>
             <button class="btn-clear" onclick="clearBatch()">清空全部</button>
         </div>
+
+
         <div class="batch-list" id="batchListContainer"></div>
+
+
         <button class="btn-batch-print" onclick="printBatch()">批次列印 / 匯出多頁 PDF</button>
+
     </div>
+
 </div>
+
 
 <div id="batch-print-container"></div>
 
+
 <script>
+
     const heightInput = document.getElementById('height');
     const widthInput = document.getElementById('width');
     const resultTai = document.getElementById('resultTai');
     const resultCm = document.getElementById('resultCm');
-    
+
     const labelItem1 = document.getElementById('label-item-1');
     const labelItem2 = document.getElementById('label-item-2');
     const labelItem3 = document.getElementById('label-item-3');
     const previewVendor = document.getElementById('preview-vendor');
+
     const batchListContainer = document.getElementById('batchListContainer');
     const batchCountTitle = document.getElementById('batch-count-title');
     const batchPrintContainer = document.getElementById('batch-print-container');
 
     let batchItems = [];
 
+
     function selectAllText(el) {
         const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            const currentRange = selection.getRangeAt(0);
-            if (currentRange.startContainer === el.firstChild && currentRange.endOffset === el.textContent.length) {
-                return;
-            }
-        }
+        if (!selection) return;
+
         const range = document.createRange();
         range.selectNodeContents(el);
         selection.removeAllRanges();
         selection.addRange(range);
     }
 
-    function autoFitLeft(el) {
-        let currentSize = 16; 
+
+    function getCleanText(el) {
+        return (el.innerText || '').replace(/\r?\n/g, '').trim();
+    }
+
+
+    function autoFit(el, defaultSize = 22) {
+        if (!el) return '';
+        let currentSize = defaultSize;
         el.style.fontSize = currentSize + 'px';
-        while ((el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) && currentSize > 6) {
-            currentSize -= 1;
+
+        while (
+            (Math.ceil(el.scrollHeight) > Math.floor(el.clientHeight) + 1) ||
+            (Math.ceil(el.scrollWidth) > Math.floor(el.clientWidth) + 1)
+        ) {
+            if (currentSize <= 6) break;
+            currentSize -= 0.5;
             el.style.fontSize = currentSize + 'px';
         }
+        return el.style.fontSize;
     }
-    
-    function autoFitRight(el) {
-        let currentSize = 16; 
-        el.style.fontSize = currentSize + 'px';
-        while ((el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) && currentSize > 6) {
-            currentSize -= 1;
-            el.style.fontSize = currentSize + 'px';
-        }
-    }
+
+    function autoFitLeft(el) { return autoFit(el, 16); }
+    function autoFitRight(el) { return autoFit(el, 22); }
+
 
     function calculateTai(val) {
         let v = val * 3.3;
         let intV = Math.floor(v);
         let cond1 = Math.floor(v + 0.6) === intV + 1;
         let cond2 = Math.floor(v + 0.3) === intV + 1;
+
         if (cond1 && !cond2) return intV + 0.5;
-        else if (cond1 && cond2) return intV + 1;
-        else return intV;
+        if (cond1 && cond2) return intV + 1;
+        return intV;
     }
 
+
+    /* =========================================================
+       智慧替換功能：只修改最前面的尺寸，保留後方自訂文字
+       ========================================================= */
+    function updateLabelKeepText(labelEl, newDim, isCm) {
+        let currentText = (labelEl.innerText || '').replace(/\r?\n/g, '');
+        
+        let regex = isCm ? /^[\d.]+\s*\*\s*[\d.]+\s*cm/i : /^[\d.]+\s*\*\s*[\d.]+/;
+
+        if (currentText.trim() === '') {
+            labelEl.innerText = newDim;
+        } else if (regex.test(currentText)) {
+            labelEl.innerText = currentText.replace(regex, newDim);
+        } else {
+            labelEl.innerText = newDim + ' ' + currentText;
+        }
+    }
+
+    function clearLabelDimension(labelEl, isCm) {
+        let currentText = (labelEl.innerText || '').replace(/\r?\n/g, '');
+        let regex = isCm ? /^[\d.]+\s*\*\s*[\d.]+\s*cm\s*/i : /^[\d.]+\s*\*\s*[\d.]+\s*/;
+        labelEl.innerText = currentText.replace(regex, '');
+    }
+
+
+    /* =========================================================
+       更新計算結果與標籤畫面
+       ========================================================= */
     function updateCalculations() {
         const hVal = parseFloat(heightInput.value);
         const wVal = parseFloat(widthInput.value);
 
         if (!isNaN(hVal) && !isNaN(wVal) && hVal > 0 && wVal > 0) {
-            const taiH = calculateTai(hVal);
-            const taiW = calculateTai(wVal);
-            
-            const taiStr = `${taiH}*${taiW}`;
+            const taiStr = `${calculateTai(hVal)}*${calculateTai(wVal)}`;
             const cmStr = `${hVal}*${wVal}cm`;
 
             resultTai.value = taiStr;
             resultCm.value = cmStr;
 
-            labelItem1.innerText = taiStr;
-            labelItem2.innerText = ''; 
-            labelItem3.innerText = cmStr;
+            updateLabelKeepText(labelItem1, taiStr, false);
+            updateLabelKeepText(labelItem3, cmStr, true);
 
             autoFitRight(labelItem1);
             autoFitRight(labelItem3);
+
         } else {
             resultTai.value = '';
             resultCm.value = '';
-            labelItem1.innerText = '';
-            labelItem3.innerText = '';
+
+            clearLabelDimension(labelItem1, false);
+            clearLabelDimension(labelItem3, true);
+
+            autoFitRight(labelItem1);
+            autoFitRight(labelItem3);
         }
     }
 
+
     function copyResult(elementId) {
         const targetInput = document.getElementById(elementId);
-        if (!targetInput.value) return;
-        navigator.clipboard.writeText(targetInput.value).then(() => {
-            // 只清空輸入框，不觸發重新計算，保留標籤上的數字和轉換結果
-            heightInput.value = ''; 
-            widthInput.value = '';
-            heightInput.focus(); // 自動聚焦到「高」的輸入框，方便下次輸入
-        });
+        if (!targetInput || !targetInput.value) return;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(targetInput.value).then(() => {
+                clearSizeInputs();
+            }).catch(() => {
+                fallbackCopy(targetInput);
+            });
+        } else {
+            fallbackCopy(targetInput);
+        }
     }
 
-    function addToBatch() {
-        const taiStr = resultTai.value;
-        const cmStr = resultCm.value;
-        const vendorName = previewVendor.innerText || '廠商名稱';
+    function fallbackCopy(targetInput) {
+        targetInput.select();
+        document.execCommand('copy');
+        clearSizeInputs();
+    }
 
-        if (!taiStr || !cmStr) {
+
+    function clearSizeInputs() {
+        heightInput.value = '';
+        widthInput.value = '';
+        heightInput.focus();
+    }
+
+
+    function handleManualEdit(el, fieldName) {
+        if (fieldName === 'vendor') {
+            autoFitLeft(el);
+        } else {
+            autoFitRight(el);
+        }
+    }
+
+
+    function addToBatch() {
+        const vendor = getCleanText(previewVendor);
+        const line1 = getCleanText(labelItem1);
+        const line2 = getCleanText(labelItem2);
+        const line3 = getCleanText(labelItem3);
+
+        if (!line1 && !line3) {
             alert('請先輸入有效的高與寬！');
             return;
         }
 
+        const vendorFs = autoFitLeft(previewVendor);
+        const line1Fs = autoFitRight(labelItem1);
+        const line2Fs = autoFitRight(labelItem2);
+        const line3Fs = autoFitRight(labelItem3);
+
         batchItems.push({
-            vendor: vendorName,
-            line1: taiStr,
-            line3: cmStr
+            vendor: vendor || '廠商名稱',
+            line1: line1,
+            line2: line2,
+            line3: line3,
+            vendorFs: vendorFs,
+            line1Fs: line1Fs,
+            line2Fs: line2Fs,
+            line3Fs: line3Fs
         });
 
         updateBatchUI();
+        heightInput.select();
     }
+
 
     function updateBatchUI() {
         batchCountTitle.innerText = `待列印清單 (${batchItems.length} 張)`;
@@ -319,23 +869,130 @@
         batchItems.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'batch-item';
+
+            const line2Display = item.line2 ? ` / ${item.line2}` : '';
+
             div.innerHTML = `
-                <span class="batch-item-text">#${index + 1} [${item.vendor}] ${item.line1} / ${item.line3}</span>
-                <button class="btn-remove" onclick="removeBatchItem(${index})">✕</button>
+                <span class="batch-item-text">
+                    #${index + 1}
+                    [${escapeHtml(item.vendor)}]
+                    ${escapeHtml(item.line1)}
+                    ${line2Display ? ` / ${escapeHtml(item.line2)}` : ''}
+                    /
+                    ${escapeHtml(item.line3)}
+                </span>
+                <button
+                    class="btn-remove"
+                    onclick="removeBatchItem(${index})"
+                    title="刪除這張"
+                >
+                    ✕
+                </button>
             `;
+
             batchListContainer.appendChild(div);
         });
     }
 
+
+    function escapeHtml(text) {
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+
     function removeBatchItem(index) {
+        if (index < 0 || index >= batchItems.length) return;
         batchItems.splice(index, 1);
         updateBatchUI();
     }
 
+
     function clearBatch() {
+        if (batchItems.length === 0) return;
         batchItems = [];
         updateBatchUI();
     }
+
+
+    function createPrintPage(item) {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'print-page';
+
+        const labelGrid = document.createElement('div');
+        labelGrid.className = 'label-grid';
+
+        const vendorCell = document.createElement('div');
+        vendorCell.className = 'grid-cell col-left';
+        const vendorText = document.createElement('div');
+        vendorText.className = 'auto-fit-left';
+        vendorText.style.fontSize = item.vendorFs || '16px';
+        vendorText.textContent = item.vendor || '廠商名稱';
+        vendorCell.appendChild(vendorText);
+
+        const line1Cell = document.createElement('div');
+        line1Cell.className = 'grid-cell';
+        const line1Text = document.createElement('div');
+        line1Text.className = 'auto-fit-right';
+        line1Text.style.fontSize = item.line1Fs || '22px';
+        line1Text.textContent = item.line1 || '';
+        line1Cell.appendChild(line1Text);
+
+        const line2Cell = document.createElement('div');
+        line2Cell.className = 'grid-cell';
+        const line2Text = document.createElement('div');
+        line2Text.className = 'auto-fit-right';
+        line2Text.style.fontSize = item.line2Fs || '22px';
+        line2Text.textContent = item.line2 || '';
+        line2Cell.appendChild(line2Text);
+
+        const line3Cell = document.createElement('div');
+        line3Cell.className = 'grid-cell';
+        const line3Text = document.createElement('div');
+        line3Text.className = 'auto-fit-right';
+        line3Text.style.fontSize = item.line3Fs || '22px';
+        line3Text.textContent = item.line3 || '';
+        line3Cell.appendChild(line3Text);
+
+        labelGrid.appendChild(vendorCell);
+        labelGrid.appendChild(line1Cell);
+        labelGrid.appendChild(line2Cell);
+        labelGrid.appendChild(line3Cell);
+        
+        pageDiv.appendChild(labelGrid);
+
+        return pageDiv;
+    }
+
+
+    function printSingle() {
+        batchPrintContainer.innerHTML = '';
+
+        const item = {
+            vendor: getCleanText(previewVendor) || '廠商名稱',
+            line1: getCleanText(labelItem1),
+            line2: getCleanText(labelItem2),
+            line3: getCleanText(labelItem3),
+            vendorFs: autoFitLeft(previewVendor),
+            line1Fs: autoFitRight(labelItem1),
+            line2Fs: autoFitRight(labelItem2),
+            line3Fs: autoFitRight(labelItem3)
+        };
+
+        if (!item.line1 && !item.line2 && !item.line3) {
+            alert('目前沒有可列印的標籤內容！');
+            return;
+        }
+
+        const pageDiv = createPrintPage(item);
+        batchPrintContainer.appendChild(pageDiv);
+        window.print();
+    }
+
 
     function printBatch() {
         if (batchItems.length === 0) {
@@ -344,37 +1001,39 @@
         }
 
         batchPrintContainer.innerHTML = '';
+
         batchItems.forEach(item => {
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'print-page';
-            pageDiv.innerHTML = `
-                <div class="label-grid" style="width: 62mm; height: 23mm;">
-                    <div class="grid-cell col-left">
-                        <div class="auto-fit-left" style="font-size: 14px;">${item.vendor}</div>
-                    </div>
-                    <div class="grid-cell">
-                        <div class="auto-fit-right" style="font-size: 16px; display:flex; align-items:center; justify-content:center;">${item.line1}</div>
-                    </div>
-                    <div class="grid-cell">
-                        <div class="auto-fit-right" style="font-size: 14px; display:flex; align-items:center; justify-content:center;"></div>
-                    </div>
-                    <div class="grid-cell">
-                        <div class="auto-fit-right" style="font-size: 16px; display:flex; align-items:center; justify-content:center;">${item.line3}</div>
-                    </div>
-                </div>
-            `;
+            const pageDiv = createPrintPage(item);
             batchPrintContainer.appendChild(pageDiv);
         });
 
         window.print();
     }
 
+
     heightInput.addEventListener('input', updateCalculations);
     widthInput.addEventListener('input', updateCalculations);
 
+    const resizeObserver = new ResizeObserver(() => {
+        autoFitLeft(previewVendor);
+        autoFitRight(labelItem1);
+        autoFitRight(labelItem2);
+        autoFitRight(labelItem3);
+    });
+
+    resizeObserver.observe(document.getElementById('print-area'));
+
     setTimeout(() => {
-        document.querySelectorAll('.auto-fit-left').forEach(el => autoFitLeft(el));
+        autoFitLeft(previewVendor);
+        autoFitRight(labelItem1);
+        autoFitRight(labelItem2);
+        autoFitRight(labelItem3);
     }, 50);
+
+    window.addEventListener('afterprint', () => {
+        batchPrintContainer.innerHTML = '';
+    });
+
 </script>
 
 </body>
