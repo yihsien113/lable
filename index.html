@@ -687,7 +687,13 @@
     let batchItems = [];
 
 
-    function selectAllText(el) {
+   function selectAllText(el) {
+        // 1. 如果已經反白過了，就直接回傳，讓瀏覽器接手（將游標放在你點擊的位置）
+        if (el.dataset.isSelected === 'true') {
+            return;
+        }
+
+        // 2. 第一次點擊：執行反白全選
         const selection = window.getSelection();
         if (!selection) return;
 
@@ -695,6 +701,16 @@
         range.selectNodeContents(el);
         selection.removeAllRanges();
         selection.addRange(range);
+
+        // 3. 標記這個標籤目前為「已反白」狀態
+        el.dataset.isSelected = 'true';
+
+        // 4. 當點擊頁面其他地方（失去焦點）時，重置這個狀態，以便下次重新點擊時能再次全選
+        el.addEventListener('blur', function onBlur() {
+            el.dataset.isSelected = 'false';
+            // 執行完後自動移除監聽器，避免重複綁定浪費資源
+            el.removeEventListener('blur', onBlur);
+        });
     }
 
 
