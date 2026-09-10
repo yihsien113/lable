@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>尺寸轉換與標籤批次產生器</title>
+    <title>cm 標籤</title>
 
     <style id="dynamic-page-size">
         @page {
@@ -37,7 +37,6 @@
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             width: 100%;
-            /* 為了容納放大 3 倍的預覽，將最大寬度從 500px 調整為 850px */
             max-width: 850px;
             margin-bottom: 30px;
         }
@@ -94,14 +93,12 @@
             border-color: #007aff;
         }
 
-        /* 關閉 Chrome, Safari, Edge, Opera 等瀏覽器的上下調整按鈕 */
         .input-field input::-webkit-outer-spin-button,
         .input-field input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
 
-        /* 關閉 Firefox 的上下調整按鈕 */
         .input-field input[type=number] {
             -moz-appearance: textfield;
         }
@@ -524,7 +521,7 @@
 <div class="card">
 
     <div class="title">
-        尺寸轉換與標籤產生器
+        cm 標籤
     </div>
 
 
@@ -1030,8 +1027,9 @@
     function printSingle() {
         batchPrintContainer.innerHTML = '';
 
+        const vendorText = getCleanText(previewVendor) || '廠商名稱';
         const item = {
-            vendor: getCleanText(previewVendor) || '廠商名稱',
+            vendor: vendorText,
             line1: getCleanText(labelItem1),
             line2: getCleanText(labelItem2),
             line3: getCleanText(labelItem3),
@@ -1048,6 +1046,9 @@
 
         const pageDiv = createPrintPage(item);
         batchPrintContainer.appendChild(pageDiv);
+
+        // 變更標題以作為 PDF 預設檔名
+        document.title = vendorText;
         window.print();
     }
 
@@ -1064,6 +1065,18 @@
             const pageDiv = createPrintPage(item);
             batchPrintContainer.appendChild(pageDiv);
         });
+
+        // 判斷批次清單中的廠商名稱，若皆相同則使用該廠商名稱，否則使用「多廠商」
+        const vendorSet = new Set(batchItems.map(item => item.vendor));
+        let printTitle = 'cm 標籤';
+        if (vendorSet.size === 1) {
+            printTitle = batchItems[0].vendor + '_批次標籤';
+        } else {
+            printTitle = '多廠商_批次標籤';
+        }
+        
+        // 變更標題以作為 PDF 預設檔名
+        document.title = printTitle;
 
         window.print();
     }
@@ -1090,6 +1103,8 @@
 
     window.addEventListener('afterprint', () => {
         batchPrintContainer.innerHTML = '';
+        // 列印完成後，將網頁標題恢復
+        document.title = 'cm 標籤';
     });
 
 </script>
