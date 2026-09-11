@@ -49,7 +49,6 @@
             font-weight: 600;
         }
 
-
         /* ========================================
            尺寸輸入區
            ======================================== */
@@ -57,7 +56,7 @@
         .input-group {
             display: flex;
             align-items: flex-end;
-            justify-content: center; /* 改為置中 */
+            justify-content: center;
             gap: 15px;
             margin-bottom: 24px;
             max-width: 500px;
@@ -116,7 +115,6 @@
             margin-bottom: 8px;
         }
 
-
         /* ========================================
            計算結果
            ======================================== */
@@ -169,7 +167,6 @@
             background-color: #0056b3;
         }
 
-
         /* ========================================
            標籤預覽 (放大 3 倍區塊)
            ======================================== */
@@ -193,8 +190,8 @@
         }
 
         .preview-scale-wrapper {
-            width: 186mm; /* 62mm * 3 */
-            height: 69mm; /* 23mm * 3 */
+            width: 186mm;
+            height: 69mm;
             position: relative;
             flex-shrink: 0;
             margin-bottom: 10px;
@@ -207,11 +204,9 @@
             display: inline-block;
             background: white;
             box-sizing: border-box;
-
             width: 62mm;
             height: 23mm;
             padding: 3mm;
-
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
             transform: scale(3);
             transform-origin: top left;
@@ -259,6 +254,7 @@
             text-orientation: upright;
             letter-spacing: 1px;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .auto-fit-right {
@@ -268,9 +264,12 @@
         .auto-fit-left:hover,
         .auto-fit-right:hover {
             background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        
+        .auto-fit-right:hover {
             cursor: text;
         }
-
 
         /* ========================================
            按鈕區
@@ -318,7 +317,6 @@
         .btn-print:hover {
             background-color: #45a049;
         }
-
 
         /* ========================================
            批次清單
@@ -411,10 +409,6 @@
             background-color: #0056b3;
         }
 
-
-        /*
-         * 實際列印容器
-         */
         #batch-print-container {
             display: none;
         }
@@ -450,31 +444,137 @@
             background-color: #007aff;
             color: #fff;
         }
+        
+        /* ========================================
+           廠商選擇 Modal 樣式
+           ======================================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .modal-content h3 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .modal-content input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            border: 2px solid #007aff;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .dropdown-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .dropdown-list li {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .dropdown-list li .vendor-id {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-list li:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-list li:hover,
+        .dropdown-list li.active {
+            background: #007aff;
+            color: white;
+        }
+        
+        .dropdown-list li:hover .vendor-id,
+        .dropdown-list li.active .vendor-id {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .modal-btn-cancel {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        .modal-btn-confirm {
+            background-color: #007aff;
+            color: white;
+        }
 
         /* ========================================
            PRINT
            ======================================== */
 
         @media print {
-
-            .card {
+            .card, .modal-overlay {
                 display: none !important;
             }
 
             html,
             body {
-
                 width: 62mm !important;
                 height: auto !important;
                 max-height: none !important;
-
                 margin: 0 !important;
                 padding: 0 !important;
-
                 overflow: visible !important;
                 background: white !important;
             }
-
 
             #batch-print-container {
                 display: block !important;
@@ -482,7 +582,6 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
-
 
             .print-page {
                 width: 62mm !important;
@@ -496,12 +595,10 @@
                 break-after: page;
             }
 
-
             .print-page:last-child {
                 page-break-after: auto !important;
                 break-after: auto !important;
             }
-
 
             .label-grid {
                 width: 100% !important;
@@ -510,214 +607,386 @@
                 box-sizing: border-box;
             }
         }
-
     </style>
 </head>
-
-
 <body>
 
+<!-- 廠商選擇 Modal 視窗 -->
+<div id="vendorModal" class="modal-overlay" onclick="closeVendorModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3>輸入或選擇廠商</h3>
+        <input type="text" id="vendorInput" placeholder="輸入編號 (如:06) 或 名稱" autocomplete="off">
+        <ul id="vendorDropdown" class="dropdown-list"></ul>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-cancel" onclick="closeVendorModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="applyVendor()">確認並帶入</button>
+        </div>
+    </div>
+</div>
 
 <div class="card">
-
-    <div class="title">
-        cm 標籤
-    </div>
-
+    <div class="title">cm 標籤</div>
 
     <div class="input-group">
-
         <div class="input-field">
             <label for="height">高</label>
             <input type="number" id="height" placeholder="0" step="any" onclick="this.select()">
         </div>
-
         <span class="multiply-symbol">×</span>
-
         <div class="input-field">
             <label for="width">寬</label>
             <input type="number" id="width" placeholder="0" step="any" onclick="this.select()">
         </div>
-
         <span class="unit-tag">CM</span>
-
     </div>
 
-
     <div class="result-group">
-
         <div class="result-row">
             <span class="result-label">台尺</span>
             <input type="text" id="resultTai" class="result-input" readonly>
             <button class="btn-copy" onclick="copyResult('resultTai')">複製</button>
         </div>
-
-
         <div class="result-row">
             <span class="result-label">公分</span>
             <input type="text" id="resultCm" class="result-input" readonly>
             <button class="btn-copy" onclick="copyResult('resultCm')">複製</button>
         </div>
-
     </div>
 
-
     <div class="label-preview-container">
-
-        <div class="preview-title">
-            標籤預覽 (視覺放大 3 倍，方便操作)
-        </div>
-
-        <!-- 這裡加入了 scale-wrapper 讓放大的元素可以撐開空間 -->
+        <div class="preview-title">標籤預覽 (視覺放大 3 倍，方便操作)</div>
         <div class="preview-scale-wrapper">
             <div id="print-area">
                 <div class="label-grid">
-
-                    <!-- 左側：廠商名稱 -->
+                    <!-- 左側：廠商名稱 (點擊觸發 Modal) -->
                     <div class="grid-cell col-left">
                         <div
                             class="auto-fit-left"
                             id="preview-vendor"
-                            contenteditable="true"
-                            spellcheck="false"
-                            onclick="selectAllText(this)"
-                            oninput="handleManualEdit(this, 'vendor')"
+                            onclick="openVendorModal()"
+                            title="點擊選擇或輸入廠商"
                         >廠商名稱</div>
                     </div>
-
                     <!-- 第一列：台尺 + 自訂備註 -->
                     <div class="grid-cell">
-                        <div
-                            class="auto-fit-right"
-                            id="label-item-1"
-                            contenteditable="true"
-                            spellcheck="false"
-                            onclick="selectAllText(this)"
-                            oninput="handleManualEdit(this, 'line1')"
-                        ></div>
+                        <div class="auto-fit-right" id="label-item-1" contenteditable="true" spellcheck="false" onclick="selectAllText(this)" oninput="handleManualEdit(this, 'line1')"></div>
                     </div>
-
                     <!-- 第二列：自由輸入 -->
                     <div class="grid-cell">
-                        <div
-                            class="auto-fit-right"
-                            id="label-item-2"
-                            contenteditable="true"
-                            spellcheck="false"
-                            onclick="selectAllText(this)"
-                            oninput="handleManualEdit(this, 'line2')"
-                        ></div>
+                        <div class="auto-fit-right" id="label-item-2" contenteditable="true" spellcheck="false" onclick="selectAllText(this)" oninput="handleManualEdit(this, 'line2')"></div>
                     </div>
-
                     <!-- 第三列：公分 + 自訂備註 -->
                     <div class="grid-cell">
-                        <div
-                            class="auto-fit-right"
-                            id="label-item-3"
-                            contenteditable="true"
-                            spellcheck="false"
-                            onclick="selectAllText(this)"
-                            oninput="handleManualEdit(this, 'line3')"
-                        ></div>
+                        <div class="auto-fit-right" id="label-item-3" contenteditable="true" spellcheck="false" onclick="selectAllText(this)" oninput="handleManualEdit(this, 'line3')"></div>
                     </div>
-
                 </div>
             </div>
         </div>
-
     </div>
-
 
     <div class="btn-action-group">
         <button class="btn-add" onclick="addToBatch()">加入批次清單</button>
         <button class="btn-print" onclick="printSingle()">列印目前單張</button>
     </div>
 
-
     <div class="batch-section">
-
         <div class="batch-header">
             <span class="batch-title" id="batch-count-title">待列印清單 (0 張)</span>
             <button class="btn-clear" onclick="clearBatch()">清空全部</button>
         </div>
-
         <div class="batch-list" id="batchListContainer"></div>
-
         <button class="btn-batch-print" onclick="printBatch()">批次列印 / 匯出多頁 PDF</button>
-
     </div>
-
 </div>
-
 
 <div id="batch-print-container"></div>
 
-
 <script>
+    /* ========================================
+       廠商資料庫與 Modal 邏輯
+       ======================================== */
+    const vendorData = [
+        { id: "A00001", name: "正豐" },
+        { id: "A00002", name: "永順" },
+        { id: "A00003", name: "力泰" },
+        { id: "A00004", name: "日昶" },
+        { id: "A00005", name: "永昌" },
+        { id: "A00006", name: "福久" },
+        { id: "A00008", name: "長洲" },
+        { id: "A00009", name: "宏元" },
+        { id: "A00011", name: "順合" },
+        { id: "A00012", name: "宏久" },
+        { id: "A00014", name: "東春" },
+        { id: "A00015", name: "中興" },
+        { id: "A00018", name: "勝新" },
+        { id: "A00022", name: "富達" },
+        { id: "A00024", name: "鴻泰" },
+        { id: "A00025", name: "冠陞" },
+        { id: "A00027", name: "中壢世豐" },
+        { id: "A00028", name: "信昌" },
+        { id: "A00029", name: "金鼎" },
+        { id: "A00030", name: "壢昌" },
+        { id: "A00031", name: "眾楠" },
+        { id: "A00033", name: "良記" },
+        { id: "A00035", name: "順吉" },
+        { id: "A00036", name: "福合" },
+        { id: "A00039", name: "興曜" },
+        { id: "A00043", name: "德霖" },
+        { id: "A00045", name: "協隆" },
+        { id: "A00046", name: "敦揚" },
+        { id: "A00050", name: "慶誠" },
+        { id: "A00053", name: "嘉興" },
+        { id: "A00054", name: "明德" },
+        { id: "A00057", name: "億芬" },
+        { id: "A00060", name: "木泉號" },
+        { id: "A00061", name: "廣山" },
+        { id: "A00062", name: "正佳" },
+        { id: "A00066", name: "昇旻" },
+        { id: "A00067", name: "成洲" },
+        { id: "A00068", name: "展慶" },
+        { id: "A00070", name: "聖泥" },
+        { id: "A00071", name: "台揚" },
+        { id: "A00073", name: "雅山竹" },
+        { id: "A00074", name: "嘉麗雅" },
+        { id: "A00075", name: "新協興" },
+        { id: "A00076", name: "秝鋒" },
+        { id: "A00078", name: "宸豐" },
+        { id: "A00079", name: "金品" },
+        { id: "A00080", name: "八德世豐" },
+        { id: "A00081", name: "益慶" },
+        { id: "A00082", name: "羚木" },
+        { id: "A00083", name: "崇泰" },
+        { id: "A00085", name: "華泰" },
+        { id: "A00087", name: "世雅" },
+        { id: "A00088", name: "義興" },
+        { id: "A00090", name: "德立" },
+        { id: "A00093", name: "坤英" },
+        { id: "A00096", name: "東鴻" },
+        { id: "A00099", name: "福豐" },
+        { id: "A00101", name: "康宇" },
+        { id: "A00102", name: "元津" },
+        { id: "A00103", name: "朝新" },
+        { id: "A00105", name: "唐德" },
+        { id: "A00107", name: "永興" },
+        { id: "A00109", name: "銪成" },
+        { id: "A00111", name: "舜菖" },
+        { id: "A00112", name: "廣聯" },
+        { id: "A00113", name: "台騰" },
+        { id: "A00115", name: "華興" },
+        { id: "A00119", name: "佳承" },
+	{ id: "A00122", name: "中華" },
+        { id: "A00127", name: "鈺加" },
+        { id: "A00128", name: "祈美" },
+        { id: "A00129", name: "永勝" },
+        { id: "A00130", name: "喬云" },
+        { id: "A00131", name: "立山" },
+        { id: "A00134", name: "昱門" },
+        { id: "A00136", name: "統一" },
+        { id: "A00137", name: "新竹永昌" },
+        { id: "A00138", name: "元亨" },
+        { id: "A00139", name: "竹北" },
+        { id: "A00144", name: "勝利" },
+        { id: "A00146", name: "福展" },
+        { id: "A00148", name: "竹駿" },
+        { id: "A00160", name: "青松" },
+        { id: "C00006", name: "李振吉" },
+        { id: "C00082", name: "宜安" },
+        { id: "C00084", name: "詠昕" },
+        { id: "C00087", name: "昕育" },
+        { id: "C00090", name: "王冠傑" },
+        { id: "C00101", name: "橙石" },
+        { id: "C00110", name: "一站材料" },
+        { id: "C00111", name: "謝昌德" },
+        { id: "C00112", name: "耀澄" },
+        { id: "C00113", name: "聖儒" },
+        { id: "D00011", name: "晟暉" },
+        { id: "D00019", name: "莊謹謙" },
+        { id: "D00020", name: "睿翔" },
+        { id: "E00001", name: "鄭書銘大帥" },
+        { id: "E00008", name: "喬鴻" },
+        { id: "E00010", name: "詹勳杞" },
+        { id: "E00017", name: "黎傳圓" },
+        { id: "E00018", name: "希望義工團" },
+	{ id: "E00040", name: "歐道鈐" },
+        { id: "E00179", name: "新生木業" },
+	{ id: "E00189", name: "佳美" },
+        { id: "E00204", name: "世豐木業" }
+    ];
 
+    const vendorModal = document.getElementById('vendorModal');
+    const vendorInput = document.getElementById('vendorInput');
+    const vendorDropdown = document.getElementById('vendorDropdown');
+    const previewVendor = document.getElementById('preview-vendor');
+    
+    let currentHighlightIndex = -1;
+    let filteredVendors = [];
+
+    function openVendorModal() {
+        if (!vendorModal) return;
+        vendorModal.style.display = 'flex';
+        let currentName = previewVendor.innerText.trim();
+        if(currentName === '廠商名稱') currentName = '';
+        vendorInput.value = currentName;
+        vendorDropdown.style.display = 'none';
+        
+        setTimeout(() => {
+            vendorInput.focus();
+            vendorInput.select();
+        }, 100);
+    }
+
+    function closeVendorModal(e) {
+        if (!vendorModal) return;
+        if(e && e.target !== vendorModal) return; 
+        vendorModal.style.display = 'none';
+    }
+
+    function applyVendor() {
+        if (!vendorInput || !previewVendor) return;
+        const val = vendorInput.value.trim();
+        if(val) {
+            previewVendor.innerText = val;
+        } else {
+            previewVendor.innerText = '廠商名稱';
+        }
+        autoFitLeft(previewVendor);
+        if (vendorModal) vendorModal.style.display = 'none';
+    }
+
+    if (vendorInput && vendorDropdown) {
+        vendorInput.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            currentHighlightIndex = -1;
+            
+            if (!query) {
+                vendorDropdown.style.display = 'none';
+                return;
+            }
+            
+            filteredVendors = vendorData.filter(v => 
+                v.id.toLowerCase().includes(query) || v.name.toLowerCase().includes(query)
+            );
+            
+            renderDropdown();
+        });
+
+        vendorInput.addEventListener('keydown', function(e) {
+            const items = vendorDropdown.querySelectorAll('li');
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (vendorDropdown.style.display === 'block' && currentHighlightIndex < items.length - 1) {
+                    currentHighlightIndex++;
+                    updateHighlight();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (vendorDropdown.style.display === 'block' && currentHighlightIndex > 0) {
+                    currentHighlightIndex--;
+                    updateHighlight();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (vendorDropdown.style.display === 'block' && currentHighlightIndex >= 0) {
+                    vendorInput.value = filteredVendors[currentHighlightIndex].name;
+                    vendorDropdown.style.display = 'none';
+                    currentHighlightIndex = -1;
+                } else {
+                    applyVendor();
+                }
+            }
+        });
+    }
+
+    function renderDropdown() {
+        if (!vendorDropdown) return;
+        if (filteredVendors.length === 0) {
+            vendorDropdown.style.display = 'none';
+            return;
+        }
+        
+        vendorDropdown.innerHTML = '';
+        filteredVendors.forEach((v, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${v.name}</span> <span class="vendor-id">${v.id}</span>`;
+            
+            li.onclick = () => {
+                vendorInput.value = v.name;
+                applyVendor();
+            };
+            
+            li.onmouseenter = () => {
+                currentHighlightIndex = index;
+                updateHighlight();
+            };
+            
+            vendorDropdown.appendChild(li);
+        });
+        vendorDropdown.style.display = 'block';
+    }
+
+    function updateHighlight() {
+        if (!vendorDropdown) return;
+        const items = vendorDropdown.querySelectorAll('li');
+        items.forEach((item, index) => {
+            if (index === currentHighlightIndex) {
+                item.classList.add('active');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    /* ========================================
+       原有標籤邏輯
+       ======================================== */
     const heightInput = document.getElementById('height');
     const widthInput = document.getElementById('width');
     const resultTai = document.getElementById('resultTai');
     const resultCm = document.getElementById('resultCm');
-
     const labelItem1 = document.getElementById('label-item-1');
     const labelItem2 = document.getElementById('label-item-2');
     const labelItem3 = document.getElementById('label-item-3');
-    const previewVendor = document.getElementById('preview-vendor');
-
     const batchListContainer = document.getElementById('batchListContainer');
     const batchCountTitle = document.getElementById('batch-count-title');
     const batchPrintContainer = document.getElementById('batch-print-container');
 
     let batchItems = [];
-    let editIndex = -1; // 記錄目前正在編輯的標籤索引
+    let editIndex = -1; 
 
-    // 用於重設編輯狀態的共用函式
     function resetEditMode() {
         editIndex = -1;
         const btnAdd = document.querySelector('.btn-add');
-        btnAdd.innerText = '加入批次清單';
-        btnAdd.style.backgroundColor = '#ff9500';
+        if (btnAdd) {
+            btnAdd.innerText = '加入批次清單';
+            btnAdd.style.backgroundColor = '#ff9500';
+        }
     }
 
-
-   function selectAllText(el) {
-        // 1. 如果已經反白過了，就直接回傳，讓瀏覽器接手（將游標放在你點擊的位置）
-        if (el.dataset.isSelected === 'true') {
-            return;
-        }
-
-        // 2. 第一次點擊：執行反白全選
+    function selectAllText(el) {
+        if (el.dataset.isSelected === 'true') return;
         const selection = window.getSelection();
         if (!selection) return;
-
         const range = document.createRange();
         range.selectNodeContents(el);
         selection.removeAllRanges();
         selection.addRange(range);
-
-        // 3. 標記這個標籤目前為「已反白」狀態
         el.dataset.isSelected = 'true';
-
-        // 4. 當點擊頁面其他地方（失去焦點）時，重置這個狀態，以便下次重新點擊時能再次全選
         el.addEventListener('blur', function onBlur() {
             el.dataset.isSelected = 'false';
-            // 執行完後自動移除監聽器，避免重複綁定浪費資源
             el.removeEventListener('blur', onBlur);
         });
     }
-
 
     function getCleanText(el) {
         return (el.innerText || '').replace(/\r?\n/g, '').trim();
     }
 
-
     function autoFit(el, defaultSize = 22) {
         if (!el) return '';
         let currentSize = defaultSize;
         el.style.fontSize = currentSize + 'px';
-
         while (
             (Math.ceil(el.scrollHeight) > Math.floor(el.clientHeight) + 1) ||
             (Math.ceil(el.scrollWidth) > Math.floor(el.clientWidth) + 1)
@@ -732,27 +1001,20 @@
     function autoFitLeft(el) { return autoFit(el, 40); }
     function autoFitRight(el) { return autoFit(el, 22); }
 
-
     function calculateTai(val) {
         let v = val * 3.3;
         let intV = Math.floor(v);
         let cond1 = Math.floor(v + 0.6) === intV + 1;
         let cond2 = Math.floor(v + 0.3) === intV + 1;
-
         if (cond1 && !cond2) return intV + 0.5;
         if (cond1 && cond2) return intV + 1;
         return intV;
     }
 
-
-    /* =========================================================
-       智慧替換功能：只修改最前面的尺寸，保留後方自訂文字
-       ========================================================= */
     function updateLabelKeepText(labelEl, newDim, isCm) {
+        if (!labelEl) return;
         let currentText = (labelEl.innerText || '').replace(/\r?\n/g, '');
-        
         let regex = isCm ? /^[\d.]+\s*\*\s*[\d.]+\s*cm/i : /^[\d.]+\s*\*\s*[\d.]+/;
-
         if (currentText.trim() === '') {
             labelEl.innerText = newDim;
         } else if (regex.test(currentText)) {
@@ -763,16 +1025,14 @@
     }
 
     function clearLabelDimension(labelEl, isCm) {
+        if (!labelEl) return;
         let currentText = (labelEl.innerText || '').replace(/\r?\n/g, '');
         let regex = isCm ? /^[\d.]+\s*\*\s*[\d.]+\s*cm\s*/i : /^[\d.]+\s*\*\s*[\d.]+\s*/;
         labelEl.innerText = currentText.replace(regex, '');
     }
 
-
-    /* =========================================================
-       更新計算結果與標籤畫面
-       ========================================================= */
     function updateCalculations() {
+        if (!heightInput || !widthInput) return;
         const hVal = parseFloat(heightInput.value);
         const wVal = parseFloat(widthInput.value);
 
@@ -780,18 +1040,17 @@
             const taiStr = `${calculateTai(hVal)}*${calculateTai(wVal)}`;
             const cmStr = `${hVal}*${wVal}cm`;
 
-            resultTai.value = taiStr;
-            resultCm.value = cmStr;
+            if (resultTai) resultTai.value = taiStr;
+            if (resultCm) resultCm.value = cmStr;
 
             updateLabelKeepText(labelItem1, taiStr, false);
             updateLabelKeepText(labelItem3, cmStr, true);
 
             autoFitRight(labelItem1);
             autoFitRight(labelItem3);
-
         } else {
-            resultTai.value = '';
-            resultCm.value = '';
+            if (resultTai) resultTai.value = '';
+            if (resultCm) resultCm.value = '';
 
             clearLabelDimension(labelItem1, false);
             clearLabelDimension(labelItem3, true);
@@ -800,7 +1059,6 @@
             autoFitRight(labelItem3);
         }
     }
-
 
     function copyResult(elementId) {
         const targetInput = document.getElementById(elementId);
@@ -823,20 +1081,16 @@
         clearSizeInputs();
     }
 
-
     function clearSizeInputs() {
-        heightInput.value = '';
-        widthInput.value = '';
-        heightInput.focus();
+        if (heightInput) {
+            heightInput.value = '';
+            heightInput.focus();
+        }
+        if (widthInput) widthInput.value = '';
     }
 
-
     function handleManualEdit(el, fieldName) {
-        if (fieldName === 'vendor') {
-            autoFitLeft(el);
-        } else {
-            autoFitRight(el);
-        }
+        autoFitRight(el);
     }
 
     function addToBatch() {
@@ -867,56 +1121,52 @@
         };
 
         if (editIndex !== -1) {
-            // 如果處於編輯模式，則覆蓋原有項目並重設狀態
             batchItems[editIndex] = newItem;
             resetEditMode();
         } else {
-            // 一般新增模式
             batchItems.push(newItem);
         }
 
         updateBatchUI();
-        heightInput.select();
+        if (heightInput) heightInput.select();
     }
 
     function editBatchItem(index) {
         const item = batchItems[index];
         editIndex = index;
 
-        // 1. 將資料載回預覽區
-        previewVendor.innerText = item.vendor;
-        labelItem1.innerText = item.line1;
-        labelItem2.innerText = item.line2;
-        labelItem3.innerText = item.line3;
+        if (previewVendor) previewVendor.innerText = item.vendor;
+        if (labelItem1) labelItem1.innerText = item.line1;
+        if (labelItem2) labelItem2.innerText = item.line2;
+        if (labelItem3) labelItem3.innerText = item.line3;
 
-        // 2. 重新計算字體大小
         autoFitLeft(previewVendor);
         autoFitRight(labelItem1);
         autoFitRight(labelItem2);
         autoFitRight(labelItem3);
 
-        // 3. 清空輸入框避免與畫面不符
-        heightInput.value = '';
-        widthInput.value = '';
-        resultTai.value = '';
-        resultCm.value = '';
+        if (heightInput) heightInput.value = '';
+        if (widthInput) widthInput.value = '';
+        if (resultTai) resultTai.value = '';
+        if (resultCm) resultCm.value = '';
 
-        // 4. 變更按鈕為儲存狀態
         const btnAdd = document.querySelector('.btn-add');
-        btnAdd.innerText = '儲存修改';
-        btnAdd.style.backgroundColor = '#007aff'; 
+        if (btnAdd) {
+            btnAdd.innerText = '儲存修改';
+            btnAdd.style.backgroundColor = '#007aff';
+        }
         
         updateBatchUI();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function updateBatchUI() {
-        batchCountTitle.innerText = `待列印清單 (${batchItems.length} 張)`;
+        if (batchCountTitle) batchCountTitle.innerText = `待列印清單 (${batchItems.length} 張)`;
+        if (!batchListContainer) return;
+        
         batchListContainer.innerHTML = '';
-
         batchItems.forEach((item, index) => {
             const div = document.createElement('div');
-            // 若為目前正在編輯的項目，加上高亮 class
             div.className = index === editIndex ? 'batch-item editing' : 'batch-item';
 
             const line2Display = item.line2 ? ` / ${item.line2}` : '';
@@ -935,11 +1185,9 @@
                     <button class="btn-remove" onclick="removeBatchItem(${index})" title="刪除這張">✕</button>
                 </div>
             `;
-
             batchListContainer.appendChild(div);
         });
     }
-
 
     function escapeHtml(text) {
         return String(text)
@@ -950,21 +1198,17 @@
             .replace(/'/g, '&#039;');
     }
 
-
     function removeBatchItem(index) {
         if (index < 0 || index >= batchItems.length) return;
         batchItems.splice(index, 1);
         
-        // 如果刪除的是正在編輯的項目，或影響到編輯中的索引，須進行修正
         if (editIndex === index) {
             resetEditMode();
         } else if (editIndex > index) {
             editIndex--;
         }
-        
         updateBatchUI();
     }
-
 
     function clearBatch() {
         if (batchItems.length === 0) return;
@@ -972,7 +1216,6 @@
         resetEditMode();
         updateBatchUI();
     }
-
 
     function createPrintPage(item) {
         const pageDiv = document.createElement('div');
@@ -1019,12 +1262,11 @@
         labelGrid.appendChild(line3Cell);
         
         pageDiv.appendChild(labelGrid);
-
         return pageDiv;
     }
 
-
     function printSingle() {
+        if (!batchPrintContainer) return;
         batchPrintContainer.innerHTML = '';
 
         const vendorText = getCleanText(previewVendor) || '廠商名稱';
@@ -1046,19 +1288,16 @@
 
         const pageDiv = createPrintPage(item);
         batchPrintContainer.appendChild(pageDiv);
-
-        // 變更標題以作為 PDF 預設檔名
         document.title = vendorText;
         window.print();
     }
-
 
     function printBatch() {
         if (batchItems.length === 0) {
             alert('目前清單是空的！');
             return;
         }
-
+        if (!batchPrintContainer) return;
         batchPrintContainer.innerHTML = '';
 
         batchItems.forEach(item => {
@@ -1066,7 +1305,6 @@
             batchPrintContainer.appendChild(pageDiv);
         });
 
-        // 判斷批次清單中的廠商名稱，若皆相同則使用該廠商名稱，否則使用「多廠商」
         const vendorSet = new Set(batchItems.map(item => item.vendor));
         let printTitle = 'cm 標籤';
         if (vendorSet.size === 1) {
@@ -1075,24 +1313,23 @@
             printTitle = '多廠商_批次標籤';
         }
         
-        // 變更標題以作為 PDF 預設檔名
         document.title = printTitle;
-
         window.print();
     }
 
+    if (heightInput) heightInput.addEventListener('input', updateCalculations);
+    if (widthInput) widthInput.addEventListener('input', updateCalculations);
 
-    heightInput.addEventListener('input', updateCalculations);
-    widthInput.addEventListener('input', updateCalculations);
-
-    const resizeObserver = new ResizeObserver(() => {
-        autoFitLeft(previewVendor);
-        autoFitRight(labelItem1);
-        autoFitRight(labelItem2);
-        autoFitRight(labelItem3);
-    });
-
-    resizeObserver.observe(document.getElementById('print-area'));
+    const printArea = document.getElementById('print-area');
+    if (printArea) {
+        const resizeObserver = new ResizeObserver(() => {
+            autoFitLeft(previewVendor);
+            autoFitRight(labelItem1);
+            autoFitRight(labelItem2);
+            autoFitRight(labelItem3);
+        });
+        resizeObserver.observe(printArea);
+    }
 
     setTimeout(() => {
         autoFitLeft(previewVendor);
@@ -1102,12 +1339,9 @@
     }, 50);
 
     window.addEventListener('afterprint', () => {
-        batchPrintContainer.innerHTML = '';
-        // 列印完成後，將網頁標題恢復
+        if (batchPrintContainer) batchPrintContainer.innerHTML = '';
         document.title = 'cm 標籤';
     });
-
 </script>
-
 </body>
 </html>
