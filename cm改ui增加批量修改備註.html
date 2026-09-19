@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>cm 標籤</title>
+
+    <style id="dynamic-page-size">
+        @page {
+            size: 62mm 23mm;
+            margin: 0;
+        }
+    </style>
+
+    <link rel="stylesheet" href="cm改ui增加批量修改備註.css">
+</head>
+<body>
+
+<div id="vendorModal" class="modal-overlay" onclick="closeVendorModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3>輸入或選擇廠商</h3>
+        <input type="text" id="vendorInput" placeholder="輸入編號 (如:06) 或 名稱" autocomplete="off">
+        <ul id="vendorDropdown" class="dropdown-list"></ul>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-cancel" onclick="closeVendorModal()">取消</button>
+            <button class="modal-btn modal-btn-confirm" onclick="applyVendor()">確認並帶入</button>
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <!-- 左側控制與預覽區 -->
+    <div class="left-panel">
+        <div class="title">cm 標籤</div>
+
+        <div class="input-group">
+            <div class="input-field">
+                <label for="height">高</label>
+                <input type="number" id="height" placeholder="0" step="any" onclick="this.select()">
+            </div>
+            <span class="multiply-symbol">×</span>
+            <div class="input-field">
+                <label for="width">寬</label>
+                <input type="number" id="width" placeholder="0" step="any" onclick="this.select()">
+            </div>
+            <span class="unit-tag">CM</span>
+        </div>
+
+        <div class="result-group">
+            <div class="result-row">
+                <span class="result-label">台尺</span>
+                <input type="text" id="resultTai" class="result-input" readonly>
+                <button class="btn-copy" onclick="copyResult('resultTai')">複製</button>
+            </div>
+            <div class="result-row">
+                <span class="result-label">公分</span>
+                <input type="text" id="resultCm" class="result-input" readonly>
+                <button class="btn-copy" onclick="copyResult('resultCm')">複製</button>
+            </div>
+        </div>
+
+        <div class="label-preview-container">
+                        <div class="preview-scale-wrapper">
+                <div id="print-area">
+                    <div class="label-grid">
+                        <div class="grid-cell col-left">
+                            <div class="auto-fit-left" id="preview-vendor" onclick="openVendorModal()" title="點擊選擇或輸入廠商">廠商名稱</div>
+                        </div>
+                        <div class="grid-cell">
+                            <div class="auto-fit-right" id="label-item-1" contenteditable="true" spellcheck="false" onclick="selectAllText(this)" oninput="handleManualEdit(this, 'line1')"></div>
+                        </div>
+                        <div class="grid-cell">
+                            <div class="auto-fit-right" id="label-item-2" contenteditable="true" spellcheck="false" onclick="selectAllText(this)" oninput="handleManualEdit(this, 'line2')"></div>
+                        </div>
+                        <div class="grid-cell">
+                            <div class="auto-fit-right" id="label-item-3" contenteditable="true" spellcheck="false" onclick="selectAllText(this)" oninput="handleManualEdit(this, 'line3')"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-action-group">
+            <button class="btn-add" onclick="addToBatch()">加入批次清單</button>
+            <button class="btn-print" onclick="printSingle()">列印目前單張</button>
+        </div>
+    </div>
+
+    <!-- 右側批次清單區 -->
+    <div class="right-panel">
+        <div class="batch-section">
+            <div class="batch-header">
+                <span class="batch-title" id="batch-count-title">待列印清單 (0 張)</span>
+                <button class="btn-clear" onclick="clearBatch()">清空全部</button>
+            </div>
+
+            <div class="batch-controls" id="batch-controls" style="display: none;">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="selectAllCheckbox" class="batch-checkbox" onchange="toggleSelectAll(this)"> 全選
+                </label>
+                <button class="btn-batch-apply" onclick="applyToSelected()">套用預覽「廠商與附件」至勾選項目</button>
+            </div>
+
+            <div class="batch-list" id="batchListContainer"></div>
+            <button class="btn-batch-print" onclick="printBatch()">批次列印 / 匯出多頁 PDF</button>
+        </div>
+    </div>
+</div>
+
+<div id="batch-print-container"></div>
+
+<script src="cm改ui增加批量修改備註.js"></script>
+</body>
+</html>
